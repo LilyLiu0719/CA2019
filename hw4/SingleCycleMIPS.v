@@ -101,7 +101,7 @@ module SingleCycleMIPS(
 
 always@(*)begin
 
-
+// mux
 
 
 

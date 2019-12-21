@@ -3,3 +3,6 @@ module Ctrl(
 	output RegDst, Branch, MemtoReg, MemWrite, ALUSrc, RegWrite;
 	output [1:0] ALUOp;
 );
+
+
+endmodule

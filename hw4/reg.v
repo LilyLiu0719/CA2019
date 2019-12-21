@@ -3,3 +3,7 @@ module  Registers(
     input regdst, regwrite, memtoreg;
 	input [31:0] read_data_mem, alu_result, read_data1, read_data2;
 );
+
+
+
+endmodule
