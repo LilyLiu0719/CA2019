@@ -19,14 +19,22 @@ module SingleCycleMIPS(
     //-------- data memory --------------------------------
     input  [31:0] ReadDataMem;  
     output        CEN;  
-    output        WEN;  
-    output  [6:0] A;  
+    output        WEN; 
+    output  [6:0] A;
     output [31:0] Data2Mem;  
-    output        OEN;  
+    output        OEN;
 
 //==== reg/wire declaration ===============================
+    wire [5:0] funct, opcode;
+    wire [4:0] rs, rd, rt, shamt;
+	wire [25:0] address;
+	wire [15:0] immediate;
+	wire RegDstJump, Branch, MemRead, MemtoReg, MemWrite, ALUSrc, RegWrite;
+	wire [1:0] ALUOp;
+	wire [31:0] read_data1, read_data2, ALUResult;
+	wire [3:0] ALUFunct;
 
-
+     
 //==== wire connection to submodule ======================
 //Example:
 //	ctrl control(
@@ -34,6 +42,60 @@ module SingleCycleMIPS(
 //	.rst_n(rst_n), ......
 
 //	);
+
+	//read  instruction
+
+	Inparser input_parser(
+		.IR(IR), // input
+		.opcode(opcode), 
+		.rs(rs), 
+		.rt(rt),  
+		.rd(rd),
+		.shamt(shamt), 
+		.funct(funct), 
+		.immediate(immediate),
+		.address(address)
+	);
+
+	Ctrl control(
+		.opcode(opcode), //input
+		.RegDst(RegDst),
+		.Branch(Branch), 
+		.MemRead(MemRead), 
+		.MemtoReg(MemtoReg), 
+		.MemWrite(MemWrite), 
+		.ALUSrc(ALUSrc),
+		.RegWrite(RegWrite)
+	);
+
+	
+	Registers reg_process(
+		.read_reg1(rs), //input
+		.read_reg2(rt), //input
+		.write_reg(rd), //input
+		.regdst(RegDst), //input
+		.regwrite(RegWrite), //input
+		.read_data_mem(ReadDataMem), //input 
+		.memtoreg(MemtoReg), //input
+		.alu_result(ALUResult), //input
+		.read_data1(read_data1), 
+		.read_data2(read_data2)
+	);
+
+	ALUCtrl ALU_control(
+		.aluop(ALUOp), //input
+		.immediate(immediate), //input 
+		.alufunct(ALUFunct)
+	);
+
+	ALU32 alu(
+		.write_mem_data1(read_data1), 
+		.write_mem_data2(read_data2), 
+		.alufunct(ALUFunct), 
+		.immediate(immediate), // need signextend
+		.alusrc(ALUSrc), //input
+		.aluout(ALUResult)
+	);
 
 //==== combinational part =================================
 
@@ -58,7 +120,7 @@ endmodule
 //Example:
 //	module ctrl(
 //		clk,
-//		rst_n, ....
+//		rst_n, ....  
 
 
 //	);
