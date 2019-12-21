@@ -1,4 +1,6 @@
-Inparser input_parser(
+module Inparser(
+	input [31:0] IR;
+	input [5:0] opcode;
         .IR(IR), // input
         .opcode(opcode),
         .rs(rs),
