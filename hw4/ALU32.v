@@ -2,7 +2,8 @@ module ALU32(
     input [7:0] ALU_input_1,
     input [7:0] ALU_input_2,        
     input [3:0] ALU_funct, 
-    output reg [31:0] ALU_out
+    output reg [31:0] ALU_out, 
+    output reg Zero
 );
 
 always@(ALU_input_1 or ALU_input_2 or ALU_funct) begin
