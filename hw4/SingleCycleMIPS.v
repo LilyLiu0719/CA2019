@@ -73,8 +73,8 @@ module SingleCycleMIPS(
 		.read_reg1(rs), //input
 		.read_reg2(rt), //input
 		.write_reg(rd), //input
-		.regdst(RegDst), //input
-		.regwrite(RegWrite), //input
+		.write_data(//todo), //input
+		.reg_write(RegWrite), //input
 		.read_data_mem(ReadDataMem), //input 
 		.memtoreg(MemtoReg), //input
 		.alu_result(ALUResult), //input
@@ -82,19 +82,17 @@ module SingleCycleMIPS(
 		.read_data2(read_data2)
 	);
 
-	ALUCtrl ALU_control(
+	ALUControl ALU_control(
 		.aluop(ALUOp), //input
-		.immediate(immediate), //input 
+		.alufunction(immediate), //input 
 		.alufunct(ALUFunct)
 	);
 
 	ALU32 alu(
-		.write_mem_data1(read_data1), 
-		.write_mem_data2(read_data2), 
-		.alufunct(ALUFunct), 
-		.immediate(immediate), // need signextend
-		.alusrc(ALUSrc), //input
-		.aluout(ALUResult)
+		.ALU_input_1(),
+		.ALU_input_2(),
+		.ALU_funct(ALUFunct), 
+		.ALU_out(ALUResult)
 	);
 
 //==== combinational part =================================
