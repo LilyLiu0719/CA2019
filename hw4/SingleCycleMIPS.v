@@ -161,6 +161,7 @@ always@(*)begin // 改w=r
 	else begin
 		write_data_w = ALUResult_r;
 	end
+<<<<<<< HEAD
 	write_reg = write_reg_w;
 	ReadDataMem = ReadDataMem_r;
 	IR = IR_r;
@@ -168,6 +169,8 @@ always@(*)begin // 改w=r
 	CEN = CEN_r;
 	WEN = WEN_r;
 
+=======
+>>>>>>> 08e90641908880cdadceb52db57d9f8cc4113442
 end
 
 //==== sequential part ====================================
