@@ -133,7 +133,7 @@ always@(posedge clk)begin
 	end
 	// branch
 	else if(write_data == 0 & branch_signal == 1) begin
-		PC = PC + 1 + $signed(immediate); 
+		PC = PC + 4 + $signed(immediate); 
 	end
 	else begin
 		IR_addr = IR_addr+4;
