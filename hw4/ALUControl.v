@@ -4,6 +4,6 @@ module  ALUControl(
 	output [3:0] alufunct;
 );
 
-
+assign alufunct = 4'b0000;
 
 endmodule

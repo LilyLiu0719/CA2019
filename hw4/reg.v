@@ -5,6 +5,6 @@ module  Registers(
     output [31:0] read_data1, read_data2;
 );
 
-
+assign read_data1 = read_data2 = 32'd0;
 
 endmodule

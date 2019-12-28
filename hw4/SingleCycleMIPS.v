@@ -33,8 +33,18 @@ module SingleCycleMIPS(
 	wire [1:0] ALUOp;
 	wire [31:0] read_data1, read_data2, ALUResult, read_data2_or_im;
 	wire [3:0] ALUFunct;
-	reg signed [31:0] temp;
 
+	reg [31:0] IR_r, IR_w, IR_addr_w, IR_addr_r, ReadDataMem_r, ReadDataMem_w, Data2Mem_r, Data2Mem_w;
+	reg [6:0] A_r, A_w;
+	reg CEN_r, CEN_w, WEN_r, WEN_w, OEN_r, OEN_w;
+	reg [5:0] funct_r, funct_w, opcode_r, opcode_w;
+    reg [4:0] rs_r, rs_w, rd_r, rd_w, rt_r, rt_w, shamt_r, shamt_w, write_reg_r, write_reg_w;
+	reg [25:0] address_r, address_w;
+	reg [15:0] immediate_r, immediate_w;
+	reg RegDstJump_r, RegDstJump_w, Branch_r, Branch_w, MemRead_r, MemRead_w, MemtoReg_w, MemtoReg_w, MemWrite_r, MemWrite_w, ALUSrc_r, ALUSrc_w, RegWrite_r, RegWrite_w;
+	reg [1:0] ALUOp_r, ALUOp_w;
+	reg [31:0] read_data1_r, read_data1_w, read_data2_r, read_data2_w, ALUResult_r, ALUResult_w, read_data2_or_im_r, read_data2_or_im_w;
+	reg [3:0] ALUFunct_r, ALUFunct_w;
      
 //==== wire connection to submodule ======================
 //Example:
@@ -46,7 +56,6 @@ module SingleCycleMIPS(
 
 	//read  instruction
 	assign Data2Mem = ALUResult;
-	
 	Inparser input_parser(
 		.IR(IR), // input
 		.opcode(opcode), 
@@ -96,8 +105,32 @@ module SingleCycleMIPS(
 
 //==== combinational part =================================
 
-always@(*)begin
+always@(*)begin // 改w=r
 	// MUX1
+	IR_w = IR_r;
+	IR_addr_w = IR_addr_r;
+	ReadDataMem_w = ReadDataMem_r;
+	Data2Mem_w = Data2Mem_r;
+	A_w = A_r;
+	CEN_w = CEN_r;
+	WEN_w = WEN_r;
+	OEN_w = OEN_r;
+	funct_w = funct_r;
+	opcode_w = opcode_r;
+	rs_w = rs_r;
+	rt_w = rt_r;
+	rd_w = rd_r;
+	shamt_w = shamt_r;
+	write_reg_w = write_reg_r;
+	address_w = address_r;
+	immediate_w = immediate_r;
+	RegDstJump_w = RegDstJump_r;
+	Branch_w = Branch_r;
+	MemRead_w = MemRead_r;
+	MemtoReg_w = MemtoReg_r;
+	MemWrite_w = MemWrite_r;
+
+
 	if(RegDst == 1'b1) begin
 		write_reg = rd;
 	end
@@ -124,7 +157,7 @@ always@(*)begin
 end
 
 //==== sequential part ====================================
-always@(posedge clk)begin
+always@(posedge clk)begin //r=w
 	// j
 	if(opcode == 6'h2) begin
 		IR_addr = address;
@@ -134,7 +167,7 @@ always@(posedge clk)begin
 		IR_addr = read_data1;
 	end
 	// branch
-	else if(write_data == 0 & branch_signal == 1) begin
+	else if(write_data == 0 & Branch == 1) begin
 		IR_addr = IR_addr + 4 + $signed(immediate); 
 	end
 	else begin
