@@ -45,7 +45,7 @@ module SingleCycleMIPS(
 //	);
 
 	//read  instruction
-	assign Data2Mem = ALUResult
+	assign Data2Mem = ALUResult;
 	
 	Inparser input_parser(
 		.IR(IR), // input
@@ -60,6 +60,8 @@ module SingleCycleMIPS(
 	);
 
 	Ctrl control(
+		.clk(clk),
+		.rst(rst_n), 
 		.opcode(opcode), //input
 		.RegDst(RegDst),
 		.Branch(Branch), 
@@ -74,7 +76,7 @@ module SingleCycleMIPS(
 		.read_reg1(rs), //input
 		.read_reg2(rt), //input
 		.write_reg(write_reg), //input
-		.write_data(//todo), //input
+		.write_data(write_data), //input
 		.read_data1(read_data1), 
 		.read_data2(read_data2)
 	);
@@ -96,7 +98,7 @@ module SingleCycleMIPS(
 
 always@(*)begin
 	// MUX1
-	if(RegDst == 1b'1) begin
+	if(RegDst == 1'b1) begin
 		write_reg = rd;
 	end
 	else begin
@@ -104,7 +106,7 @@ always@(*)begin
 	end
 
 	// MUX2
-	if(ALUSrc == 1b'1) begin
+	if(ALUSrc == 1'b1) begin
 		read_data2_or_im = { {16{immediate[15]}}, immediate};
 	end
 	else begin
@@ -112,7 +114,7 @@ always@(*)begin
 	end
 
 	// MUX3
-	if(MemtoReg == 1b'1) begin
+	if(MemtoReg == 1'b1) begin
 		write_data = ReadDataMem;
 	end
 	else begin
@@ -133,12 +135,11 @@ always@(posedge clk)begin
 	end
 	// branch
 	else if(write_data == 0 & branch_signal == 1) begin
-		PC = PC + 4 + $signed(immediate); 
+		IR_addr = IR_addr + 4 + $signed(immediate); 
 	end
 	else begin
 		IR_addr = IR_addr+4;
 	end
-
 end
 
 endmodule
