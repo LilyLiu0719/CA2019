@@ -118,7 +118,6 @@ always@(*)begin
 	else begin
 		write_data = ALUResult;
 	end
-
 end
 
 //==== sequential part ====================================
