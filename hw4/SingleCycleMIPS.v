@@ -56,6 +56,7 @@ module SingleCycleMIPS(
 
 	//read  instruction
 	assign Data2Mem = ALUResult;
+	assign write_reg = write_reg_w;
 	Inparser input_parser(
 		.IR(IR), // input
 		.opcode(opcode), 
@@ -107,52 +108,65 @@ module SingleCycleMIPS(
 
 always@(*)begin // 改w=r
 	// MUX1
-	IR_w = IR_r;
-	IR_addr_w = IR_addr_r;
-	ReadDataMem_w = ReadDataMem_r;
-	Data2Mem_w = Data2Mem_r;
-	A_w = A_r;
-	CEN_w = CEN_r;
-	WEN_w = WEN_r;
-	OEN_w = OEN_r;
-	funct_w = funct_r;
-	opcode_w = opcode_r;
-	rs_w = rs_r;
-	rt_w = rt_r;
-	rd_w = rd_r;
-	shamt_w = shamt_r;
-	write_reg_w = write_reg_r;
-	address_w = address_r;
-	immediate_w = immediate_r;
-	RegDstJump_w = RegDstJump_r;
-	Branch_w = Branch_r;
-	MemRead_w = MemRead_r;
-	MemtoReg_w = MemtoReg_r;
-	MemWrite_w = MemWrite_r;
-
+	// IR_w = IR_r;
+	// IR_addr_w = IR_addr_r;
+	// ReadDataMem_w = ReadDataMem_r;
+	// Data2Mem_w = Data2Mem_r;
+	// A_w = A_r;
+	// CEN_w = CEN_r;
+	// WEN_w = WEN_r;
+	// OEN_w = OEN_r;
+	// funct_w = funct_r;
+	// opcode_w = opcode_r;
+	// rs_w = rs_r;
+	// rt_w = rt_r;
+	// rd_w = rd_r;
+	// shamt_w = shamt_r;
+	// write_reg_w = write_reg_r;
+	// address_w = address_r;
+	// immediate_w = immediate_r;
+	// RegDstJump_w = RegDstJump_r;
+	// Branch_w = Branch_r;
+	// MemRead_w = MemRead_r;
+	// MemtoReg_w = MemtoReg_r;
+	// MemWrite_w = MemWrite_r;
+	// ALUSrc_w = ALUSrc_r;
+	// RegWrite_w = RegWrite_r;
+	// ALUOp_w = ALUOp_r;
+	// read_data1_w = read_data1_r;
+	// read_data2_w = read_data2_r;
+	// ALUResult_w = ALUResult_r; 
+	// read_data2_or_im_w = read_data2_or_im_r;
+	// ALUFunct_w = ALUFunct_r;
 
 	if(RegDst == 1'b1) begin
-		write_reg = rd;
+		write_reg_w = rd;
 	end
 	else begin
-		write_reg = rt;
+		write_reg_w = rt_r;
 	end
 
 	// MUX2
 	if(ALUSrc == 1'b1) begin
-		read_data2_or_im = { {16{immediate[15]}}, immediate};
+		read_data2_or_im_w = { {16{immediate_r[15]}}, immediate_r};
 	end
 	else begin
-		read_data2_or_im = read_data2;
+		read_data2_or_im_w = read_data2_r;
 	end
 
 	// MUX3
-	if(MemtoReg == 1'b1) begin
-		write_data = ReadDataMem;
+	if(MemtoReg_w == 1'b1) begin
+		write_data_w = ReadDataMem_r;
 	end
 	else begin
-		write_data = ALUResult;
+		write_data_w = ALUResult_r;
 	end
+	write_reg = write_reg_w;
+	ReadDataMem = ReadDataMem_r;
+	IR = IR_r;
+	IR_addr = IR_addr_r;
+	CEN = CEN_r;
+	WEN = WEN_r;
 
 end
 
