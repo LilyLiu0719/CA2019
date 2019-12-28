@@ -12,10 +12,10 @@ module Inparser(
 	always @(IR) begin
 		// R type
 		if(opcode == 6'h0) begin
-                        rs = instruction[25:21];
-                        rt = instruction[20:16];
-                        rd = instruction[15:11];
-                        shamt = instruction[10:6];
+			rs = instruction[25:21];
+			rt = instruction[20:16];
+			rd = instruction[15:11];
+			shamt = instruction[10:6];
 			funct = instruction[5:0];
 		end
 		// J type
