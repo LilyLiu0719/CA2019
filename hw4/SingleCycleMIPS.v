@@ -284,41 +284,21 @@ always@(*)begin // 改w=r
 			endcase
 		end
 		6'h31: begin //lwcl
-			case(process_counter_r)
-				4'd0: begin
-					process_counter_w = 4'd1;
-					OEN_w = 1'b0;
-					CEN_w = 1'b0;
-					WEN_w = 1'b1;
-					A_w = (Freg_r[_fs] + {16'b0 ,_immediate}) >> 2;
-				end
-				4'd1: begin
-					state_w = PROCESS;
-					process_counter_w = 4'd0;
-					CEN_w = 1'b1;
-					Freg_w[_rt] = ReadDataMem;
-					IR_addr_w = IR_addr_r + 32'd4;
-					instruction_w = IR;
-				end
-			endcase
+			OEN_w = 1'b0;
+			CEN_w = 1'b0;
+			WEN_w = 1'b1;
+			A_w = (Freg_r[_fs] + {16'b0 ,_immediate}) >> 2;
+			Freg_w[_rt] = ReadDataMem;
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;
 		6'h39: begin // swcl
-			case(process_counter_r)
-				4'd0: begin
-					process_counter_w = 4'd1;
-					CEN_w = 1'b0;
-					WEN_w = 1'b0;
-					OEN_w = 1'b1;
-					A_w = (Freg_r[_rs] + {16'b0 ,_immediate}) >> 2;
-					Data2Mem_w = Freg_r[_rt];
-				end
-				4'd1: begin
-					state_w = PROCESS;
-					process_counter_w = 4'd0;
-					CEN_w = 1'b1;
-					IR_addr_w = IR_addr_r + 32'd4;
-					instruction_w = IR;
-				end
-			endcase
+			CEN_w = 1'b0;
+			WEN_w = 1'b0;
+			OEN_w = 1'b1;
+			A_w = (Freg_r[_rs] + {16'b0 ,_immediate}) >> 2;
+			Data2Mem_w = Freg_r[_rt];
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;
 		end
 		6'h35: begin //ldcl
 			case(process_counter_r)
@@ -328,23 +308,14 @@ always@(*)begin // 改w=r
 					CEN_w = 1'b0;
 					WEN_w = 1'b1;
 					A_w = (Freg[_fs] + {16'b0 ,_immediate}) >> 2;
-				end
-				4'd1: begin
-					process_counter_w = 4'd2;
-					CEN_w = 1'b1;
 					Freg[_rt] = ReadDataMem;
 				end
-				4'd2: begin
-					process_counter_w = 4'd3;
+				4'd1: begin
+					process_counter_w = 4'd0;
 					OEN_w = 1'b0;
 					CEN_w = 1'b0;
 					WEN_w = 1'b1;
 					A_w = (Freg[_fs+1] + {16'b0 ,_immediate}) >> 2;
-				end
-				4'd3: begin
-					state_w = PROCESS;
-					process_counter_w = 4'd0;
-					CEN_w = 1'b1;
 					Freg[_rt+1] = ReadDataMem;
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
@@ -359,23 +330,15 @@ always@(*)begin // 改w=r
 					OEN_w = 1'b1;
 					A_w = (Freg[_rs] + {16'b0 ,_immediate}) >> 2;
 					Data2Mem_w = Freg_r[_rt];
-				end
-				4'd1: begin
 					process_counter_w = 4'd2;
 					CEN_w = 1'b1;
-				end
-				4'd2: begin
-					process_counter_w = 4'd3;
+				4'd1: begin
+					process_counter_w = 4'd0;
 					CEN_w = 1'b0;
 					WEN_w = 1'b0;
 					OEN_w = 1'b1;
 					A_w = (Freg[_rs+1] + {16'b0 ,_immediate}) >> 2;
 					Data2Mem_w = Freg_r[_rt+1];
-				end
-				4'd3: begin
-					state_w = PROCESS;
-					process_counter_w = 4'd0;
-					CEN_w = 1'b1;
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
 				end
