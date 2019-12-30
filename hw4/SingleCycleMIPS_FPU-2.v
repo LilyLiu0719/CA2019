@@ -366,10 +366,22 @@ always@(*)begin
 						// 6'h01: write_data_w = subout_r;
 						// 6'h02: write_data_w = mulout_r;
 						// 6'h03: write_data_w = divout_r;
-						6'h00: write_data_w = _addout;
-						6'h01: write_data_w = _subout;
-						6'h02: write_data_w = _mulout;
-						6'h03: write_data_w = _divout;
+						6'h00: begin 
+							write_data_w = _addout;
+							Freg_w[_fd] = write_data_w;
+						end
+						6'h01: begin
+							write_data_w = _subout;
+							Freg_w[_fd] = write_data_w;
+						end
+						6'h02: begin
+							write_data_w = _mulout;
+							Freg_w[_fd] = write_data_w;
+						end
+						6'h03: begin
+							write_data_w = _divout;
+							Freg_w[_fd] = write_data_w;
+						end
 						6'h32: begin 
 							if(read_data1_w == read_data2_w) begin
 								FPCond_w = 1;
@@ -377,10 +389,9 @@ always@(*)begin
 							else begin
 								FPCond_w = 0;
 							end
-							$display("FPCond_w: %b, read_data1_w: %h, read_data2_w: %h", FPCond_w, read_data1_w, read_data2_w);
+							$display("FPCond_w: %b, read_data1_w: %h, read_data2_w: %h, _fs: %h, _ft: %h, R[_f]: %h", FPCond_w, read_data1_w, read_data2_w, _fs, _ft, Freg_r[_fs]);
 						end
 					endcase
-					Freg_w[_fd] = write_data_w;
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
 				end
