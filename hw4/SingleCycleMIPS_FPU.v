@@ -373,8 +373,6 @@ always@(*)begin
 						6'h32: FPCond_w = (read_data1_w == read_data2_w) ? (1'b1) : (1'b0);
 					endcase
 					Freg_w[_rd] = write_data_w;
-					IR_addr_w = IR_addr_r + 32'd4;
-					instruction_w = IR;
 				end
 				// bclt
 				6'h8: IR_addr_w = (FPCond_r == 1'b1) ? (IR_addr_r + 4 + {14'b0, _immediate, 2'b0}) : (IR_addr_r + 32'd4); 
@@ -385,10 +383,8 @@ always@(*)begin
 						6'h00: dwrite_data_w = _daddout;
 						6'h01: dwrite_data_w = _dsubout;
 					endcase
-					Freg_w[_rd] = dwrite_data_w[63:32];
-					Freg_w[_rd+1] = dwrite_data_w[31:0];
-					IR_addr_w = IR_addr_r + 32'd4;
-					instruction_w = IR;
+					Freg_w[_rd] = write_data_w[63:32];
+					Freg_w[_rd+1] = write_data_w[31:0];
 				end
 			endcase
 		end
@@ -466,7 +462,6 @@ end
 
 //==== sequential part ====================================
 always@(posedge clk, negedge rst_n)begin
-	$display("[%h] %h", IR_addr_w, IR);
 	if(!rst_n) begin
 		// reset
 		process_counter_r <= 4'd0;
