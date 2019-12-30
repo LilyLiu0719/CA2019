@@ -370,7 +370,15 @@ always@(*)begin
 						6'h01: write_data_w = _subout;
 						6'h02: write_data_w = _mulout;
 						6'h03: write_data_w = _divout;
-						6'h32: FPCond_w = (read_data1_w == read_data2_w) ? (1'b1) : (1'b0);
+						6'h32: begin 
+							if(read_data1_w == read_data2_w) begin
+								FPCond_w = 1;
+							end
+							else begin
+								FPCond_w = 0;
+							end
+							$display("FPCond_w: %b, read_data1_w: %h, read_data2_w: %h", FPCond_w, read_data1_w, read_data2_w);
+						end
 					endcase
 					Freg_w[_fd] = write_data_w;
 					IR_addr_w = IR_addr_r + 32'd4;
