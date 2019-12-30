@@ -487,6 +487,7 @@ always@(posedge clk, negedge rst_n)begin
 		WEN_r <= 1;
 		OEN_r <= 1;
 		rnd_r <= 3'd0;
+		FPCond_r <= 0;
 
 		for (i=0 ; i<32; i=i+1) begin
 			register_r[i] <= 0;
