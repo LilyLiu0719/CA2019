@@ -94,12 +94,12 @@ module SingleCycleMIPS(
 	assign _funct = IR[5:0];
 	assign _faluin1 = read_data1_w;
 	assign _faluin2 = read_data2_w;
-	assign _addout = addout_w;
-	assign _subout = subout_w;
-	assign _mulout = mulout_w;
-	assign _divout = divout_w;
-	assign _daddout = daddout_w;
-	assign _dsubout = dsubout_w;
+	// assign _addout = addout_w;
+	// assign _subout = subout_w;
+	// assign _mulout = mulout_w;
+	// assign _divout = divout_w;
+	// assign _daddout = daddout_w;
+	// assign _dsubout = dsubout_w;
 
 
 	DW_fp_add fp_adder(
@@ -362,10 +362,14 @@ always@(*)begin
 					read_data1_w = Freg_r[_rs];
 					read_data2_w = Freg_r[_rt];
 					case(_funct)
-						6'h00: write_data_w = addout_r;
-						6'h01: write_data_w = subout_r;
-						6'h02: write_data_w = mulout_r;
-						6'h03: write_data_w = divout_r;
+						// 6'h00: write_data_w = addout_r;
+						// 6'h01: write_data_w = subout_r;
+						// 6'h02: write_data_w = mulout_r;
+						// 6'h03: write_data_w = divout_r;
+						6'h00: write_data_w = _addout;
+						6'h01: write_data_w = _subout;
+						6'h02: write_data_w = _mulout;
+						6'h03: write_data_w = _divout;
 						6'h32: FPCond_w = (read_data1_w == read_data2_w) ? (1'b1) : (1'b0);
 					endcase
 					Freg_w[_rd] = write_data_w;
@@ -376,8 +380,8 @@ always@(*)begin
 					dread_data1_w = { Freg_r[_rs], Freg_r[_rs+1] };
 					dread_data2_w = { Freg_r[_rt], Freg_r[_rt+1] };
 					case(_funct)
-						6'h00: dwrite_data_w = daddout_r;
-						6'h01: dwrite_data_w = dsubout_r;
+						6'h00: dwrite_data_w = _daddout;
+						6'h01: dwrite_data_w = _dsubout;
 					endcase
 					Freg_w[_rd] = write_data_w[63:32];
 					Freg_w[_rd+1] = write_data_w[31:0];
@@ -474,6 +478,7 @@ always@(posedge clk, negedge rst_n)begin
 		for (i=0 ; i<32; i=i+1) begin
 			register_r[i] <= 0;
 		end
+		//fpu
 		for( i=0; i<32; i=i+1) begin
 			Freg_r[i] <= 0;
 		end
@@ -497,22 +502,23 @@ always@(posedge clk, negedge rst_n)begin
 		OEN_r <= OEN_w;
 
 		// fpu
-		rnd_r = rnd_w;
-		addout_r = addout_w;
-		subout_r = subout_w;
-		mulout_r = mulout_w;
-		divout_r = divout_w;
-		FPCond_r = FPCond_w;
-		daddout_r = daddout_w;
-		dsubout_r = dsubout_w;
-		read_data1_r = read_data1_w;
-		read_data2_r = read_data2_w;
-		write_data_r = write_data_w;
-		dread_data1_r = dread_data1_w;
-		dread_data2_r = dread_data2_w;
-		dwrite_data_r = dwrite_data_w;
+		rnd_r <= rnd_w;
+		addout_r <= addout_w;
+		subout_r <= subout_w;
+		mulout_r <= mulout_w;
+		divout_r <= divout_w;
+		FPCond_r <= FPCond_w;
+		daddout_r <= daddout_w;
+		dsubout_r <= dsubout_w;
+		read_data1_r <= read_data1_w;
+		read_data2_r <= read_data2_w;
+		write_data_r <= write_data_w;
+		dread_data1_r <= dread_data1_w;
+		dread_data2_r <= dread_data2_w;
+		dwrite_data_r <= dwrite_data_w;
+
 		for( i=0; i<32; i=i+1) begin
-			Freg_r[i] = Freg_w[i];
+			Freg_r[i] <= Freg_w[i];
 		end
 	end
 end
