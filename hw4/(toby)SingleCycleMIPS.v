@@ -34,6 +34,13 @@ module SingleCycleMIPS(
 	wire [4:0] _rs, _rt, _rd, _shamt;
 	wire signed [15:0] _immediate;
 	wire [25:0] _address;
+
+	//fpu wire
+	wire [4:0] _fmt;
+	wire [4:0] _ft, _fs, _fd;
+	wire [2:0] _rnd;
+	wire [31:0] _faluin1, _faluin2, _addout, _subout, _mulout, _divout;
+	wire [63:0] _daluin1, _daluin2, _daddout, _dsubout;
 	
 	// reg
 	reg CEN_w, CEN_r, WEN_w, WEN_r, OEN_w, OEN_r;
@@ -46,9 +53,18 @@ module SingleCycleMIPS(
 	reg [3:0] process_counter_w, process_counter_r;
 	reg [31:0] instruction_w, instruction_r;
 
+	// fpu
+	reg [31:0] read_data1_r, read_data1_w, read_data2_r, read_data2_w, write_data_r, write_data_w;
+	reg [63:0] dread_data1_r, dread_data1_w, dread_data2_r, dread_data2_w, dwrite_data_r, dwrite_data_w;
+	reg [2:0] rnd_w, rnd_r;
+	reg [31:0] addout_r, addout_w, subout_r, subout_w, mulout_r, mulout_w, divout_r, divout_w;
+	reg FPCond_w, FPCond_r;
+	reg [63:0] daddout_r, daddout_w, dsubout_r, dsubout_w;
+
 	// MIPS register
 	reg signed [31:0] register_r[0:31];
 	reg signed [31:0] register_w[0:31];
+	reg [31:0] Freg_r[0:31], Freg_w[0:31];
 
 	// assign wire 
 	assign _opcode = IR[31:26];
@@ -67,6 +83,66 @@ module SingleCycleMIPS(
 	// assign ReadDataMem = ReadDataMem_w;
 	assign Data2Mem = Data2Mem_w;
 	assign OEN = OEN_w;
+
+	// fpu assign
+	assign _rnd = rnd_w;
+	assign _opcode = IR[31:26];
+	assign _fmt = IR[25:21];
+	assign _ft = IR[20:16];
+	assign _fs = IR[15:11];
+	assign _fd = IR[10:6];
+	assign _funct = IR[5:0];
+	assign _faluin1 = read_data1_w;
+	assign _faluin2 = read_data2_w;
+	assign _addout = addout_w;
+	assign _subout = subout_w;
+	assign _mulout = mulout_w;
+	assign _divout = divout_w;
+	assign _daddout = daddout_w;
+	assign _dsubout = dsubout_w;
+
+
+	DW_fp_add fp_adder(
+		.a(_faluin1), 
+		.b(_faluin2), 
+		.rnd(_rnd), 
+		.z(_addout)
+	);
+
+	DW_fp_sub fp_sub(
+		.a(_faluin1), 
+		.b(_faluin2), 
+		.rnd(_rnd), 
+		.z(_subout)
+	);
+
+	DW_fp_mult fp_mul(
+		.a(_faluin1), 
+		.b(_faluin2), 
+		.rnd(_rnd), 
+		.z(_mulout)
+	);
+	
+	DW_fp_div fp_div(
+		.a(_faluin1), 
+		.b(_faluin2), 
+		.rnd(_rnd), 
+		.z(_divout)
+	);
+
+	DW_fp_add #(52, 11, 0) dp_adder(
+		.a(_daluin1), 
+		.b(_daluin2), 
+		.rnd(_rnd), 
+		.z(_daddout)
+	);
+
+	DW_fp_sub #(52, 11, 0) dp_sub(
+		.a(_daluin1), 
+		.b(_daluin2), 
+		.rnd(_rnd), 
+		.z(_dsubout)
+	);
 
 	// $ZERO
 	// assign register_w[0] = 32'd0;
@@ -109,6 +185,24 @@ always@(*)begin
 	register_w[30] = register_r[30];
 	register_w[31] = register_r[31];
 
+	rnd_w = rnd_r;
+	addout_w = addout_r;
+	subout_w = subout_r;
+	mulout_w = mulout_r;
+	divout_w = divout_r;
+	FPCond_w = FPCond_r;
+	daddout_w = daddout_r;
+	dsubout_w = dsubout_r;
+	read_data1_w = read_data1_r;
+	read_data2_w = read_data2_r;
+	write_data_w = write_data_r;
+	dread_data1_w = dread_data1_r;
+	dread_data2_w = dread_data2_r;
+	dwrite_data_w = dwrite_data_r;
+	for( i=0; i<32; i=i+1) begin
+		Freg_w[i] = Freg_r[i];
+	end
+
 	instruction_w = instruction_r;
 	process_counter_w = process_counter_r;
 	IR_addr_w = IR_addr_r;
@@ -120,6 +214,7 @@ always@(*)begin
 	WEN_w = 1'b1;
 	OEN_w = 1'b1;
 	CEN_w = 1'b1;
+	rnd_w = 3'd0;
 	
 	if(IR != 0) begin
 		case(_opcode)
@@ -290,6 +385,98 @@ always@(*)begin
 			IR_addr_w = {IR_addr_r[31:28] ,_address, 2'b0};
 			instruction_w = IR;
 		end
+		6'h11: begin // FR
+			case(_fmt)
+				6'h10: begin
+					read_data1_w = Freg_r[_rs];
+					read_data2_w = Freg_r[_rt];
+					case(_funct)
+						6'h00: write_data_w = addout_r;
+						6'h01: write_data_w = subout_r;
+						6'h02: write_data_w = mulout_r;
+						6'h03: write_data_w = divout_r;
+						6'h32: FPCond_w = (read_data1_w == read_data2_w) ? (1'b1) : (1'b0)
+					endcase
+					Freg_w[_rd] = write_data_w;
+				end
+				// bclt
+				6'h8: IR_addr_w = (FPCond_r == 1'b1) ? (IR_addr_r + 4 + {14'b0, _immediate, 2'b0}) : (IR_addr_r + 32'd4); 
+				6'h11: begin // double
+					dread_data1_w = { Freg_r[_rs], Freg_r[_rs+1] };
+					dread_data2_w = { Freg_r[_rt], Freg_r[_rt+1] };
+					case(_funct)
+						6'h00: dwrite_data_w = daddout_r;
+						6'h01: dwrite_data_w = dsubout_r;
+					endcase
+					Freg_w[_rd] = write_data_w[63:32];
+					Freg_w[_rd+1] = write_data_w[31:0];
+				end
+			endcase
+		end
+		6'h31: begin //lwcl
+			OEN_w = 1'b0;
+			CEN_w = 1'b0;
+			WEN_w = 1'b1;
+			A_w = (Freg_r[_fs] + {16'b0 ,_immediate}) >> 2;
+			Freg_w[_rt] = ReadDataMem;
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;
+		end
+		6'h39: begin // swcl
+			CEN_w = 1'b0;
+			WEN_w = 1'b0;
+			OEN_w = 1'b1;
+			A_w = (Freg_r[_rs] + {16'b0 ,_immediate}) >> 2;
+			Data2Mem_w = Freg_r[_rt];
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;
+		end
+		6'h35: begin //ldcl
+			case(process_counter_r)
+				4'd0: begin
+					process_counter_w = 4'd1;
+					OEN_w = 1'b0;
+					CEN_w = 1'b0;
+					WEN_w = 1'b1;
+					A_w = (Freg[_fs] + {16'b0 ,_immediate}) >> 2;
+					Freg[_rt] = ReadDataMem;
+				end
+				4'd1: begin
+					process_counter_w = 4'd0;
+					OEN_w = 1'b0;
+					CEN_w = 1'b0;
+					WEN_w = 1'b1;
+					A_w = (Freg[_fs+1] + {16'b0 ,_immediate}) >> 2;
+					Freg[_rt+1] = ReadDataMem;
+					IR_addr_w = IR_addr_r + 32'd4;
+					instruction_w = IR;
+				end
+			endcase
+		end
+		6'h3D: begin // sdcl
+			case(process_counter_r)
+				4'd0: begin
+					process_counter_w = 4'd1;
+					CEN_w = 1'b0;
+					WEN_w = 1'b0;
+					OEN_w = 1'b1;
+					A_w = (Freg[_rs] + {16'b0 ,_immediate}) >> 2;
+					Data2Mem_w = Freg_r[_rt];
+					process_counter_w = 4'd2;
+					CEN_w = 1'b1;
+				end
+				4'd1: begin
+					process_counter_w = 4'd0;
+					CEN_w = 1'b0;
+					WEN_w = 1'b0;
+					OEN_w = 1'b1;
+					A_w = (Freg[_rs+1] + {16'b0 ,_immediate}) >> 2;
+					Data2Mem_w = Freg_r[_rt+1];
+					IR_addr_w = IR_addr_r + 32'd4;
+					instruction_w = IR;
+				end
+			endcase
+		end
 		endcase
 	end
 	else begin
@@ -311,6 +498,7 @@ always@(posedge clk, negedge rst_n)begin
 		CEN_r <= 0;
 		WEN_r <= 1;
 		OEN_r <= 1;
+		rnd_r <= 3'd0;
 
 		// for (i=0 ; i<32; i=i+1) begin
 		// 	register_r[i] <= 0;
@@ -395,6 +583,25 @@ always@(posedge clk, negedge rst_n)begin
 		CEN_r <= CEN_w;
 		WEN_r <= WEN_w;
 		OEN_r <= OEN_w;
+
+		// fpu
+		rnd_r = rnd_w;
+		addout_r = addout_w;
+		subout_r = subout_w;
+		mulout_r = mulout_w;
+		divout_r = divout_w;
+		FPCond_r = FPCond_w;
+		daddout_r = daddout_w;
+		dsubout_r = dsubout_w;
+		read_data1_r = read_data1_w;
+		read_data2_r = read_data2_w;
+		write_data_r = write_data_w;
+		dread_data1_r = dread_data1_w;
+		dread_data2_r = dread_data2_w;
+		dwrite_data_r = dwrite_data_w;
+		for( i=0; i<32; i=i+1) begin
+			Freg_r[i] = Freg_w[i];
+		end
 	end
 end
 endmodule
