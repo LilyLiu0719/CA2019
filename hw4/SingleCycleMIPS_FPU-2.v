@@ -422,7 +422,7 @@ always@(*)begin
 					CEN_w = 1'b0;
 					WEN_w = 1'b1;
 					A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
-					Freg_r[_rt] = ReadDataMem;
+					Freg_w[_rt] = ReadDataMem;
 				end
 				4'd1: begin
 					process_counter_w = 4'd0;
@@ -430,7 +430,7 @@ always@(*)begin
 					CEN_w = 1'b0;
 					WEN_w = 1'b1;
 					A_w = $unsigned( $signed(Freg_r[_fs+1]) + _immediate) >> 2;
-					Freg_r[_rt+1] = ReadDataMem;
+					Freg_w[_rt+1] = ReadDataMem;
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
 				end
