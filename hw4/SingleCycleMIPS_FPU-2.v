@@ -389,7 +389,6 @@ always@(*)begin
 							else begin
 								FPCond_w = 0;
 							end
-							$display("FPCond_w: %b, read_data1_w: %h, read_data2_w: %h, _fs: %h, _ft: %h, R[_f]: %h", FPCond_w, read_data1_w, read_data2_w, _fs, _ft, Freg_r[_fs]);
 						end
 					endcase
 					IR_addr_w = IR_addr_r + 32'd4;
@@ -403,8 +402,6 @@ always@(*)begin
 					else begin
 						IR_addr_w = (IR_addr_r + 32'd4);
 					end
-					// IR_addr_w = (FPCond_r == 1'b1) ?  $unsigned ($signed (IR_addr_r) + _immediate*4 + 4) : (IR_addr_r + 32'd4); 
-					$display("FPCond_r: %b, IR_addr_w: %h", FPCond_r,  IR_addr_w);
 				end
 				6'h11: begin // double
 					dread_data1_w = { Freg_r[_fs], Freg_r[_fs+1] };
@@ -424,10 +421,9 @@ always@(*)begin
 			CEN_w = 1'b0;
 			OEN_w = 1'b0;	
 			WEN_w = 1'b1;
-			A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
+			A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
 			Freg_w[_ft] = ReadDataMem;
 			ReadDataMem_w = ReadDataMem;
-			$display("ReadDataMem: %h, _rt: %h, A_w: %h", ReadDataMem, _rt,  A_w);
 			IR_addr_w = IR_addr_r + 32'd4;
 			instruction_w = IR;
 		end
@@ -435,9 +431,8 @@ always@(*)begin
 			CEN_w = 1'b0;
 			OEN_w = 1'b1;
 			WEN_w = 1'b0;
-			A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
+			A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
 			Data2Mem_w = Freg_r[_ft];
-			$display("Data2Mem_w: %h", Data2Mem_w);
 			IR_addr_w = IR_addr_r + 32'd4;
 			instruction_w = IR;
 		end
@@ -449,7 +444,7 @@ always@(*)begin
 					OEN_w = 1'b0;
 					CEN_w = 1'b1;
 					WEN_w = 1'b0;
-					A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
+					A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
 					Freg_w[_ft] = ReadDataMem;
 					ReadDataMem_w = ReadDataMem;
 				end
@@ -458,7 +453,7 @@ always@(*)begin
 					OEN_w = 1'b0;
 					CEN_w = 1'b1;
 					WEN_w = 1'b0;
-					A_w = $unsigned( $signed(Freg_r[_fs+1]) + _immediate) >> 2;
+					A_w = $unsigned( $signed(register_r[_rs+1]) + _immediate) >> 2;
 					Freg_w[_ft+1] = ReadDataMem;
 					ReadDataMem_w = ReadDataMem;
 					IR_addr_w = IR_addr_r + 32'd4;
@@ -473,7 +468,7 @@ always@(*)begin
 					CEN_w = 1'b0;
 					WEN_w = 1'b0;
 					OEN_w = 1'b1;
-					A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
+					A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
 					Data2Mem_w = Freg_r[_ft];
 					process_counter_w = 4'd2;
 					CEN_w = 1'b1;
@@ -483,7 +478,7 @@ always@(*)begin
 					CEN_w = 1'b0;
 					WEN_w = 1'b0;
 					OEN_w = 1'b1;
-					A_w = $unsigned( $signed(Freg_r[_fs+1]) + _immediate) >> 2;
+					A_w = $unsigned( $signed(register_r[_rs+1]) + _immediate) >> 2;
 					Data2Mem_w = Freg_r[_ft+1];
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
