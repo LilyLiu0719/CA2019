@@ -395,7 +395,7 @@ always@(*)begin
 						6'h01: write_data_w = subout_r;
 						6'h02: write_data_w = mulout_r;
 						6'h03: write_data_w = divout_r;
-						6'h32: FPCond_w = (read_data1_w == read_data2_w) ? (1'b1) : (1'b0)
+						6'h32: FPCond_w = (read_data1_w == read_data2_w) ? (1'b1) : (1'b0);
 					endcase
 					Freg_w[_rd] = write_data_w;
 				end
@@ -438,16 +438,16 @@ always@(*)begin
 					OEN_w = 1'b0;
 					CEN_w = 1'b0;
 					WEN_w = 1'b1;
-					A_w = (Freg[_fs] + {16'b0 ,_immediate}) >> 2;
-					Freg[_rt] = ReadDataMem;
+					A_w = (Freg_r[_fs] + {16'b0 ,_immediate}) >> 2;
+					Freg_r[_rt] = ReadDataMem;
 				end
 				4'd1: begin
 					process_counter_w = 4'd0;
 					OEN_w = 1'b0;
 					CEN_w = 1'b0;
 					WEN_w = 1'b1;
-					A_w = (Freg[_fs+1] + {16'b0 ,_immediate}) >> 2;
-					Freg[_rt+1] = ReadDataMem;
+					A_w = (Freg_r[_fs+1] + {16'b0 ,_immediate}) >> 2;
+					Freg_r[_rt+1] = ReadDataMem;
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
 				end
@@ -460,7 +460,7 @@ always@(*)begin
 					CEN_w = 1'b0;
 					WEN_w = 1'b0;
 					OEN_w = 1'b1;
-					A_w = (Freg[_rs] + {16'b0 ,_immediate}) >> 2;
+					A_w = (Freg_r[_rs] + {16'b0 ,_immediate}) >> 2;
 					Data2Mem_w = Freg_r[_rt];
 					process_counter_w = 4'd2;
 					CEN_w = 1'b1;
@@ -470,7 +470,7 @@ always@(*)begin
 					CEN_w = 1'b0;
 					WEN_w = 1'b0;
 					OEN_w = 1'b1;
-					A_w = (Freg[_rs+1] + {16'b0 ,_immediate}) >> 2;
+					A_w = (Freg_r[_rs+1] + {16'b0 ,_immediate}) >> 2;
 					Data2Mem_w = Freg_r[_rt+1];
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
