@@ -396,9 +396,9 @@ always@(*)begin
 			endcase
 		end
 		6'h31: begin //lwcl
-			OEN_w = 1'b0;
-			CEN_w = 1'b1;
-			WEN_w = 1'b0;
+			CEN_w = 1'b0;
+			OEN_w = 1'b0;	
+			WEN_w = 1'b1;
 			A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
 			Freg_w[_rt] = ReadDataMem;
 			ReadDataMem_w = ReadDataMem;
@@ -408,8 +408,8 @@ always@(*)begin
 		end
 		6'h39: begin // swcl
 			CEN_w = 1'b0;
-			WEN_w = 1'b0;
 			OEN_w = 1'b1;
+			WEN_w = 1'b0;
 			A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
 			Data2Mem_w = Freg_r[_rt];
 			$display("Data2Mem_w: %h", Data2Mem_w);
