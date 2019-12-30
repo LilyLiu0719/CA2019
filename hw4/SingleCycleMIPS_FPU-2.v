@@ -373,11 +373,13 @@ always@(*)begin
 						6'h32: FPCond_w = (read_data1_w == read_data2_w) ? (1'b1) : (1'b0);
 					endcase
 					Freg_w[_rd] = write_data_w;
+					IR_addr_w = IR_addr_r + 32'd4;
+					instruction_w = IR;
 				end
 				// bclt
 				6'h8: begin
-					$display("FPCond_r: %b, ", FPCond_r);
 					IR_addr_w = (FPCond_r == 1'b1) ?  $unsigned ($signed (IR_addr_r) + _immediate*4 + 4) : (IR_addr_r + 32'd4); 
+					$display("FPCond_r: %b, IR_addr_w: %h", FPCond_r,  IR_addr_w);
 				end
 				6'h11: begin // double
 					dread_data1_w = { Freg_r[_rs], Freg_r[_rs+1] };
@@ -388,10 +390,10 @@ always@(*)begin
 					endcase
 					Freg_w[_rd] = dwrite_data_w[63:32];
 					Freg_w[_rd+1] = dwrite_data_w[31:0];
+					IR_addr_w = IR_addr_r + 32'd4;
+					instruction_w = IR;
 				end
 			endcase
-			IR_addr_w = IR_addr_r + 32'd4;
-			instruction_w = IR;
 		end
 		6'h31: begin //lwcl
 			OEN_w = 1'b0;
@@ -408,6 +410,7 @@ always@(*)begin
 			OEN_w = 1'b1;
 			A_w = $unsigned( $signed(Freg_r[_fs]) + _immediate) >> 2;
 			Data2Mem_w = Freg_r[_rt];
+			$display("Data2Mem_w: %h", Data2Mem_w);
 			IR_addr_w = IR_addr_r + 32'd4;
 			instruction_w = IR;
 		end
