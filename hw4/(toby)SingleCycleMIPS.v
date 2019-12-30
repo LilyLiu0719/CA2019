@@ -1,0 +1,400 @@
+module SingleCycleMIPS( 
+    clk,
+    rst_n,
+    IR_addr,
+    IR,
+    ReadDataMem,
+    CEN,
+    WEN,
+    A,
+    Data2Mem,
+    OEN
+);
+ 
+//==== in/out declaration =================================
+    //-------- processor ----------------------------------
+    input         clk, rst_n;
+    input  [31:0] IR;
+    output [31:0] IR_addr;
+    //-------- data memory --------------------------------
+    input  [31:0] ReadDataMem;  
+    output        CEN;  
+    output        WEN; 
+    output 	[6:0] A;
+    output [31:0] Data2Mem;  
+    output        OEN;
+  
+//==== reg/wire declaration ===============================
+	// param state
+	parameter IDLE = 2'd0;
+	parameter PROCESS = 2'd1;
+
+	// wire
+	wire [5:0] _opcode, _funct;
+	wire [4:0] _rs, _rt, _rd, _shamt;
+	wire signed [15:0] _immediate;
+	wire [25:0] _address;
+	
+	// reg
+	reg CEN_w, CEN_r, WEN_w, WEN_r, OEN_w, OEN_r;
+	reg [6:0] 	A_w, A_r;
+	reg signed [31:0]	Data2Mem_w, Data2Mem_r;
+	reg signed [31:0]	ReadDataMem_w, ReadDataMem_r;
+	reg [31:0]	IR_addr_w, IR_addr_r;
+
+	// internal reg
+	reg [3:0] process_counter_w, process_counter_r;
+	reg [31:0] instruction_w, instruction_r;
+
+	// MIPS register
+	reg signed [31:0] register_r[0:31];
+	reg signed [31:0] register_w[0:31];
+
+	// assign wire 
+	assign _opcode = IR[31:26];
+	assign _rs = IR[25:21];
+	assign _rt = IR[20:16];
+	assign _rd = IR[15:11];
+	assign _shamt = IR[10:6];
+	assign _funct = IR[5:0];
+	assign _immediate = IR[15:0];
+	assign _address = IR[25:0];
+
+	assign IR_addr = IR_addr_r;
+	assign CEN = CEN_w;
+	assign WEN = WEN_w;
+	assign A = A_w;
+	// assign ReadDataMem = ReadDataMem_w;
+	assign Data2Mem = Data2Mem_w;
+	assign OEN = OEN_w;
+
+	// $ZERO
+	// assign register_w[0] = 32'd0;
+//==== combinational part =================================
+	integer i;
+always@(*)begin
+	// for ( i=0 ; i<32; i=i+1) begin
+	// 	register_w[i] = register_r[i];
+	// end
+	register_w[0] = 0;
+	register_w[1] = register_r[1];
+	register_w[2] = register_r[2];
+	register_w[3] = register_r[3];
+	register_w[4] = register_r[4];
+	register_w[5] = register_r[5];
+	register_w[6] = register_r[6];
+	register_w[7] = register_r[7];
+	register_w[8] = register_r[8];
+	register_w[9] = register_r[9];
+	register_w[10] = register_r[10];
+	register_w[11] = register_r[11];
+	register_w[12] = register_r[12];
+	register_w[13] = register_r[13];
+	register_w[14] = register_r[14];
+	register_w[15] = register_r[15];
+	register_w[16] = register_r[16];
+	register_w[17] = register_r[17];
+	register_w[18] = register_r[18];
+	register_w[19] = register_r[19];
+	register_w[20] = register_r[20];
+	register_w[21] = register_r[21];
+	register_w[22] = register_r[22];
+	register_w[23] = register_r[23];
+	register_w[24] = register_r[24];
+	register_w[25] = register_r[25];
+	register_w[26] = register_r[26];
+	register_w[27] = register_r[27];
+	register_w[28] = register_r[28];
+	register_w[29] = register_r[29];
+	register_w[30] = register_r[30];
+	register_w[31] = register_r[31];
+
+	instruction_w = instruction_r;
+	process_counter_w = process_counter_r;
+	IR_addr_w = IR_addr_r;
+
+	ReadDataMem_w = ReadDataMem;
+	Data2Mem_w = Data2Mem_r;
+	
+	A_w = A_r;
+	WEN_w = 1'b1;
+	OEN_w = 1'b1;
+	CEN_w = 1'b1;
+	
+	if(IR != 0) begin
+		case(_opcode)
+		6'h0: begin
+			case(_funct)
+			6'h0: begin //sll
+				case (_shamt)
+					31 : register_w[_rd] = {register_r[_rt][0:0], 31'b0};
+					30 : register_w[_rd] = {register_r[_rt][1:0], 30'b0};
+					29 : register_w[_rd] = {register_r[_rt][2:0], 29'b0};
+					28 : register_w[_rd] = {register_r[_rt][3:0], 29'b0};
+					27 : register_w[_rd] = {register_r[_rt][4:0], 27'b0};
+					26 : register_w[_rd] = {register_r[_rt][5:0], 26'b0};
+					25 : register_w[_rd] = {register_r[_rt][6:0], 25'b0};
+					24 : register_w[_rd] = {register_r[_rt][7:0], 24'b0};
+					23 : register_w[_rd] = {register_r[_rt][8:0], 23'b0};
+					22 : register_w[_rd] = {register_r[_rt][9:0], 22'b0};
+					21 : register_w[_rd] = {register_r[_rt][10:0], 21'b0};
+					20 : register_w[_rd] = {register_r[_rt][11:0], 20'b0};
+					19 : register_w[_rd] = {register_r[_rt][12:0], 19'b0};
+					18 : register_w[_rd] = {register_r[_rt][13:0], 18'b0};
+					17 : register_w[_rd] = {register_r[_rt][14:0], 17'b0};
+					16 : register_w[_rd] = {register_r[_rt][15:0], 16'b0};
+					15 : register_w[_rd] = {register_r[_rt][16:0], 15'b0};
+					14 : register_w[_rd] = {register_r[_rt][17:0], 14'b0};
+					13 : register_w[_rd] = {register_r[_rt][18:0], 13'b0};
+					12 : register_w[_rd] = {register_r[_rt][19:0], 12'b0};
+					11 : register_w[_rd] = {register_r[_rt][20:0], 11'b0};
+					10 : register_w[_rd] = {register_r[_rt][21:0], 10'b0};
+					9 : register_w[_rd] = {register_r[_rt][22:0], 9'b0};
+					8 : register_w[_rd] = {register_r[_rt][23:0], 8'b0};
+					7 : register_w[_rd] = {register_r[_rt][24:0], 7'b0};
+					6 : register_w[_rd] = {register_r[_rt][25:0], 6'b0};
+					5 : register_w[_rd] = {register_r[_rt][26:0], 5'b0};
+					4 : register_w[_rd] = {register_r[_rt][27:0], 4'b0};
+					3 : register_w[_rd] = {register_r[_rt][28:0], 3'b0};
+					2 : register_w[_rd] = {register_r[_rt][29:0], 2'b0};
+					1 : register_w[_rd] = {register_r[_rt][30:0], 1'b0};
+					0 : register_w[_rd] = 	register_r[_rt][31:0];
+				endcase
+				IR_addr_w = IR_addr_r + 32'd4;
+				instruction_w = IR;
+			end
+			6'h02: begin //srl
+				case (_shamt)
+					31 : register_w[_rd] = {31'b0, register_r[_rt][31:31]};
+					30 : register_w[_rd] = {30'b0, register_r[_rt][31:30]};
+					29 : register_w[_rd] = {29'b0, register_r[_rt][31:29]};
+					28 : register_w[_rd] = {28'b0, register_r[_rt][31:28]};
+					27 : register_w[_rd] = {27'b0, register_r[_rt][31:27]};
+					26 : register_w[_rd] = {26'b0, register_r[_rt][31:26]};
+					25 : register_w[_rd] = {25'b0, register_r[_rt][31:25]};
+					24 : register_w[_rd] = {24'b0, register_r[_rt][31:24]};
+					23 : register_w[_rd] = {23'b0, register_r[_rt][31:23]};
+					22 : register_w[_rd] = {22'b0, register_r[_rt][31:22]};
+					21 : register_w[_rd] = {21'b0, register_r[_rt][31:21]};
+					20 : register_w[_rd] = {20'b0, register_r[_rt][31:20]};
+					19 : register_w[_rd] = {19'b0, register_r[_rt][31:19]};
+					18 : register_w[_rd] = {18'b0, register_r[_rt][31:18]};
+					17 : register_w[_rd] = {17'b0, register_r[_rt][31:17]};
+					16 : register_w[_rd] = {16'b0, register_r[_rt][31:16]};
+					15 : register_w[_rd] = {15'b0, register_r[_rt][31:15]};
+					14 : register_w[_rd] = {14'b0, register_r[_rt][31:14]};
+					13 : register_w[_rd] = {13'b0, register_r[_rt][31:13]};
+					12 : register_w[_rd] = {12'b0, register_r[_rt][31:12]};
+					11 : register_w[_rd] = {11'b0, register_r[_rt][31:11]};
+					10 : register_w[_rd] = {10'b0, register_r[_rt][31:10]};
+					9 : register_w[_rd] = {9'b0, register_r[_rt][31:9]};
+					8 : register_w[_rd] = {8'b0, register_r[_rt][31:8]};
+					7 : register_w[_rd] = {7'b0, register_r[_rt][31:7]};
+					6 : register_w[_rd] = {6'b0, register_r[_rt][31:6]};
+					5 : register_w[_rd] = {5'b0, register_r[_rt][31:5]};
+					4 : register_w[_rd] = {4'b0, register_r[_rt][31:4]};
+					3 : register_w[_rd] = {3'b0, register_r[_rt][31:3]};
+					2 : register_w[_rd] = {2'b0, register_r[_rt][31:2]};
+					1 : register_w[_rd] = {1'b0, register_r[_rt][31:1]};
+					0 : register_w[_rd] = 	register_r[_rt][31:0];
+				endcase
+				IR_addr_w = IR_addr_r + 32'd4;
+				instruction_w = IR;
+			end
+			6'h20: begin //add 
+				register_w[_rd] = register_r[_rs] + register_r[_rt];
+				IR_addr_w = IR_addr_r + 32'd4;
+				instruction_w = IR;
+			end
+			6'h22: begin //sub
+				register_w[_rd] = register_r[_rs] - register_r[_rt];
+				IR_addr_w = IR_addr_r + 32'd4;
+				instruction_w = IR;
+			end
+			6'h24: begin //and
+				register_w[_rd] = register_r[_rs] & register_r[_rt];
+				IR_addr_w = IR_addr_r + 32'd4;
+				instruction_w = IR;
+			end
+			6'h25: begin //or
+				register_w[_rd] = register_r[_rs] | register_r[_rt];
+				IR_addr_w = IR_addr_r + 32'd4;
+				instruction_w = IR;
+			end
+			6'h2A: begin //slt
+				if(register_r[_rs] < register_r[_rt]) begin
+					register_w[_rd] = 1;
+				end
+				else begin
+					register_w[_rd] = 0;
+				end
+				IR_addr_w = IR_addr_r + 32'd4;
+				instruction_w = IR;
+			end
+			6'h8: begin //jr
+				IR_addr_w = register_r[_rs];
+				instruction_w = IR;
+			end
+			endcase
+		end
+		6'h8: begin // addi 
+			register_w[_rt] = $unsigned( $signed(register_r[_rs]) + _immediate);
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;
+		end
+		6'h23: begin // lw
+			CEN_w = 1'b0;
+			WEN_w = 1'b1;
+			OEN_w = 1'b0;
+			A_w = $unsigned( $signed (register_r[_rs]) + _immediate) >> 2;
+			register_w[_rt] = ReadDataMem;
+			ReadDataMem_w = ReadDataMem;
+
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;	
+		end
+		6'h2B: begin // sw
+			CEN_w = 1'b0;
+			WEN_w = 1'b0;
+			OEN_w = 1'b1;
+			
+			A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
+			Data2Mem_w = register_r[_rt];
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;
+		end
+		6'h4: begin // beq
+			if(register_r[_rs] == register_r[_rt]) begin
+				IR_addr_w = $unsigned ($signed (IR_addr_r) + _immediate*4 + 4);
+			end
+			else begin
+				IR_addr_w = (IR_addr_r + 32'd4);
+			end
+			instruction_w = IR;
+		end
+		6'h5: begin // bne
+			if(register_r[_rs] == register_r[_rt]) begin
+				IR_addr_w = (IR_addr_r + 32'd4);
+			end
+			else begin
+				IR_addr_w = $unsigned ($signed (IR_addr_r) + _immediate*4 + 4);
+			end
+			instruction_w = IR;
+		end
+		6'h2: begin // j
+			IR_addr_w = {IR_addr_r[31:28] ,_address, 2'b0};
+			instruction_w = IR;
+		end
+		6'h3: begin // jal
+			register_w[31] =  IR_addr_r + 32'd4;
+			IR_addr_w = {IR_addr_r[31:28] ,_address, 2'b0};
+			instruction_w = IR;
+		end
+		endcase
+	end
+	else begin
+		IR_addr_w = IR_addr_r + 32'd4;
+		instruction_w = IR;
+	end
+end
+
+//==== sequential part ====================================
+always@(posedge clk, negedge rst_n)begin
+	if(!rst_n) begin
+		// reset
+		process_counter_r <= 4'd0;
+		IR_addr_r <= 0;
+		instruction_r <= 0;
+		ReadDataMem_r <= 0;
+		Data2Mem_r <= 0;
+		A_r <= 0;
+		CEN_r <= 0;
+		WEN_r <= 1;
+		OEN_r <= 1;
+
+		// for (i=0 ; i<32; i=i+1) begin
+		// 	register_r[i] <= 0;
+		// end
+		register_r[0] <= 0;
+		register_r[1] <= 0;
+		register_r[2] <= 0;
+		register_r[3] <= 0;
+		register_r[4] <= 0;
+		register_r[5] <= 0;
+		register_r[6] <= 0;
+		register_r[7] <= 0;
+		register_r[8] <= 0;
+		register_r[9] <= 0;
+		register_r[10] <= 0;
+		register_r[11] <= 0;
+		register_r[12] <= 0;
+		register_r[13] <= 0;
+		register_r[14] <= 0;
+		register_r[15] <= 0;
+		register_r[16] <= 0;
+		register_r[17] <= 0;
+		register_r[18] <= 0;
+		register_r[19] <= 0;
+		register_r[20] <= 0;
+		register_r[21] <= 0;
+		register_r[22] <= 0;
+		register_r[23] <= 0;
+		register_r[24] <= 0;
+		register_r[25] <= 0;
+		register_r[26] <= 0;
+		register_r[27] <= 0;
+		register_r[28] <= 0;
+		register_r[29] <= 0;
+		register_r[30] <= 0;
+		register_r[31] <= 0;
+	end
+	else begin
+		// main
+		// for ( i=0 ; i<32; i=i+1) begin
+		// 	register_r[i] <= register_w[i];
+		// end
+		register_r[0] <= 0;
+		register_r[1] <= register_w[1];
+		register_r[2] <= register_w[2];
+		register_r[3] <= register_w[3];
+		register_r[4] <= register_w[4];
+		register_r[5] <= register_w[5];
+		register_r[6] <= register_w[6];
+		register_r[7] <= register_w[7];
+		register_r[8] <= register_w[8];
+		register_r[9] <= register_w[9];
+		register_r[10] <= register_w[10];
+		register_r[11] <= register_w[11];
+		register_r[12] <= register_w[12];
+		register_r[13] <= register_w[13];
+		register_r[14] <= register_w[14];
+		register_r[15] <= register_w[15];
+		register_r[16] <= register_w[16];
+		register_r[17] <= register_w[17];
+		register_r[18] <= register_w[18];
+		register_r[19] <= register_w[19];
+		register_r[20] <= register_w[20];
+		register_r[21] <= register_w[21];
+		register_r[22] <= register_w[22];
+		register_r[23] <= register_w[23];
+		register_r[24] <= register_w[24];
+		register_r[25] <= register_w[25];
+		register_r[26] <= register_w[26];
+		register_r[27] <= register_w[27];
+		register_r[28] <= register_w[28];
+		register_r[29] <= register_w[29];
+		register_r[30] <= register_w[30];
+		register_r[31] <= register_w[31];
+
+		instruction_r <= instruction_w;
+		IR_addr_r <= IR_addr_w;
+		process_counter_r <= process_counter_w;
+		Data2Mem_r <= Data2Mem_w;
+		ReadDataMem_r <= ReadDataMem_w;
+		A_r <= A_w;
+		CEN_r <= CEN_w;
+		WEN_r <= WEN_w;
+		OEN_r <= OEN_w;
+	end
+end
+endmodule
