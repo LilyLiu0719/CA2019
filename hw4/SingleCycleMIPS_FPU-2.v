@@ -80,7 +80,6 @@ module SingleCycleMIPS(
 	assign CEN = CEN_w;
 	assign WEN = WEN_w;
 	assign A = A_w;
-	// assign ReadDataMem = ReadDataMem_w;
 	assign Data2Mem = Data2Mem_w;
 	assign OEN = OEN_w;
 
@@ -94,13 +93,8 @@ module SingleCycleMIPS(
 	assign _funct = IR[5:0];
 	assign _faluin1 = read_data1_w;
 	assign _faluin2 = read_data2_w;
-	// assign _addout = addout_w;
-	// assign _subout = subout_w;
-	// assign _mulout = mulout_w;
-	// assign _divout = divout_w;
-	// assign _daddout = daddout_w;
-	// assign _dsubout = dsubout_w;
-
+	assign _daluin1 = dread_data1_w;
+	assign _daluin2 = dread_data2_w;
 
 	DW_fp_add fp_adder(
 		.a(_faluin1), 
@@ -407,8 +401,12 @@ always@(*)begin
 					dread_data1_w = { Freg_r[_fs], Freg_r[_fs+1] };
 					dread_data2_w = { Freg_r[_ft], Freg_r[_ft+1] };
 					case(_funct)
-						6'h00: dwrite_data_w = _daddout;
-						6'h01: dwrite_data_w = _dsubout;
+						6'h00: begin
+							dwrite_data_w = _daddout;
+						end
+						6'h01: begin
+							dwrite_data_w = _dsubout;
+						end
 					endcase
 					Freg_w[_fd] = dwrite_data_w[63:32];
 					Freg_w[_fd+1] = dwrite_data_w[31:0];
@@ -432,7 +430,7 @@ always@(*)begin
 			OEN_w = 1'b1;
 			WEN_w = 1'b0;
 			A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
-			Data2Mem_w = Freg_r[_ft];
+			Data2Mem_w = Freg_r[_rt];
 			IR_addr_w = IR_addr_r + 32'd4;
 			instruction_w = IR;
 		end
@@ -453,10 +451,9 @@ always@(*)begin
 					CEN_w = 1'b0;
 					OEN_w = 1'b0;	
 					WEN_w = 1'b1;
-					A_w = $unsigned( $signed(register_r[_rs]) + _immediate +4) >> 2;
+					A_w = $unsigned( $signed(register_r[_rs]) + _immediate + 4 ) >> 2;
 					Freg_w[_ft+1] = ReadDataMem;
 					ReadDataMem_w = ReadDataMem;
-					$display("sdcl : ReadDataMem = %h", ReadDataMem);
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
 				end
@@ -470,17 +467,15 @@ always@(*)begin
 					WEN_w = 1'b0;
 					OEN_w = 1'b1;
 					A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
-					Data2Mem_w = Freg_r[_ft];
-					CEN_w = 1'b1;
+					Data2Mem_w = Freg_r[_rt];
 				end
 				4'd1: begin
 					process_counter_w = 4'd0;
 					CEN_w = 1'b0;
 					WEN_w = 1'b0;
 					OEN_w = 1'b1;
-					A_w = $unsigned( $signed(register_r[_rs]) + _immediate +4 ) >> 2;
-					Data2Mem_w = Freg_r[_ft+1];
-					$display("sdcl : IR_addr_w = ", IR_addr_w);
+					A_w = $unsigned( $signed(register_r[_rs]) + _immediate + 4 ) >> 2;
+					Data2Mem_w = Freg_r[_rt+1];
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
 				end
@@ -523,8 +518,6 @@ always@(posedge clk, negedge rst_n)begin
 		for ( i=0 ; i<32; i=i+1) begin
 			register_r[i] <= register_w[i];
 		end
-		$display("[%h] %h", IR_addr_w, IR);
-
 
 		instruction_r <= instruction_w;
 		IR_addr_r <= IR_addr_w;
