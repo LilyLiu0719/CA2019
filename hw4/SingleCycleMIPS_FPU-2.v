@@ -441,18 +441,18 @@ always@(*)begin
 			case(process_counter_r)
 				4'd0: begin
 					process_counter_w = 4'd1;
-					OEN_w = 1'b0;
-					CEN_w = 1'b1;
-					WEN_w = 1'b0;
+					CEN_w = 1'b0;
+					OEN_w = 1'b0;	
+					WEN_w = 1'b1;
 					A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
 					Freg_w[_ft] = ReadDataMem;
 					ReadDataMem_w = ReadDataMem;
 				end
 				4'd1: begin
 					process_counter_w = 4'd0;
-					OEN_w = 1'b0;
-					CEN_w = 1'b1;
-					WEN_w = 1'b0;
+					CEN_w = 1'b0;
+					OEN_w = 1'b0;	
+					WEN_w = 1'b1;
 					A_w = $unsigned( $signed(register_r[_rs+1]) + _immediate) >> 2;
 					Freg_w[_ft+1] = ReadDataMem;
 					ReadDataMem_w = ReadDataMem;
@@ -480,6 +480,7 @@ always@(*)begin
 					OEN_w = 1'b1;
 					A_w = $unsigned( $signed(register_r[_rs+1]) + _immediate) >> 2;
 					Data2Mem_w = Freg_r[_ft+1];
+					$display("sdcl : IR_addr_w = ", IR_addr_w);
 					IR_addr_w = IR_addr_r + 32'd4;
 					instruction_w = IR;
 				end
