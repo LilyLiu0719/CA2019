@@ -414,6 +414,7 @@ always@(*)begin
 			IR_addr_w = IR_addr_r + 32'd4;
 			instruction_w = IR;
 		end
+
 		6'h35: begin //ldcl
 			case(process_counter_r)
 				4'd0: begin
