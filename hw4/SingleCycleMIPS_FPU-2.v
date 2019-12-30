@@ -383,10 +383,12 @@ always@(*)begin
 						6'h00: dwrite_data_w = _daddout;
 						6'h01: dwrite_data_w = _dsubout;
 					endcase
-					Freg_w[_rd] = write_data_w[63:32];
-					Freg_w[_rd+1] = write_data_w[31:0];
+					Freg_w[_rd] = dwrite_data_w[63:32];
+					Freg_w[_rd+1] = dwrite_data_w[31:0];
 				end
 			endcase
+			IR_addr_w = IR_addr_r + 32'd4;
+			instruction_w = IR;
 		end
 		6'h31: begin //lwcl
 			OEN_w = 1'b0;
