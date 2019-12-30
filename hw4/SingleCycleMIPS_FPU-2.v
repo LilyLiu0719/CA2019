@@ -470,8 +470,8 @@ always@(*)begin
 					OEN_w = 1'b1;
 					A_w = $unsigned( $signed(register_r[_rs]) + _immediate) >> 2;
 					Data2Mem_w = Freg_r[_ft];
-					process_counter_w = 4'd2;
 					CEN_w = 1'b1;
+					$display("sdcl : process_counter_w = ", process_counter_w);
 				end
 				4'd1: begin
 					process_counter_w = 4'd0;
