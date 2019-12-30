@@ -386,7 +386,13 @@ always@(*)begin
 				end
 				// bclt
 				6'h8: begin
-					IR_addr_w = (FPCond_r == 1'b1) ?  $unsigned ($signed (IR_addr_r) + _immediate*4 + 4) : (IR_addr_r + 32'd4); 
+					if(FPCond_r == 1'b1) begin
+						IR_addr_w = $unsigned ($signed (IR_addr_r) + _immediate*4 + 4);
+					end
+					else begin
+						IR_addr_w = (IR_addr_r + 32'd4);
+					end
+					// IR_addr_w = (FPCond_r == 1'b1) ?  $unsigned ($signed (IR_addr_r) + _immediate*4 + 4) : (IR_addr_r + 32'd4); 
 					$display("FPCond_r: %b, IR_addr_w: %h", FPCond_r,  IR_addr_w);
 				end
 				6'h11: begin // double
