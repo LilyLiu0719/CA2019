@@ -73,41 +73,41 @@ module SingleCycleMIPS(
 //==== combinational part =================================
 	integer i;
 always@(*)begin
-	// for ( i=0 ; i<32; i=i+1) begin
-	// 	register_w[i] = register_r[i];
-	// end
+	for ( i=0 ; i<32; i=i+1) begin
+		register_w[i] = register_r[i];
+	end
 	register_w[0] = 0;
-	register_w[1] = register_r[1];
-	register_w[2] = register_r[2];
-	register_w[3] = register_r[3];
-	register_w[4] = register_r[4];
-	register_w[5] = register_r[5];
-	register_w[6] = register_r[6];
-	register_w[7] = register_r[7];
-	register_w[8] = register_r[8];
-	register_w[9] = register_r[9];
-	register_w[10] = register_r[10];
-	register_w[11] = register_r[11];
-	register_w[12] = register_r[12];
-	register_w[13] = register_r[13];
-	register_w[14] = register_r[14];
-	register_w[15] = register_r[15];
-	register_w[16] = register_r[16];
-	register_w[17] = register_r[17];
-	register_w[18] = register_r[18];
-	register_w[19] = register_r[19];
-	register_w[20] = register_r[20];
-	register_w[21] = register_r[21];
-	register_w[22] = register_r[22];
-	register_w[23] = register_r[23];
-	register_w[24] = register_r[24];
-	register_w[25] = register_r[25];
-	register_w[26] = register_r[26];
-	register_w[27] = register_r[27];
-	register_w[28] = register_r[28];
-	register_w[29] = register_r[29];
-	register_w[30] = register_r[30];
-	register_w[31] = register_r[31];
+	// register_w[1] = register_r[1];
+	// register_w[2] = register_r[2];
+	// register_w[3] = register_r[3];
+	// register_w[4] = register_r[4];
+	// register_w[5] = register_r[5];
+	// register_w[6] = register_r[6];
+	// register_w[7] = register_r[7];
+	// register_w[8] = register_r[8];
+	// register_w[9] = register_r[9];
+	// register_w[10] = register_r[10];
+	// register_w[11] = register_r[11];
+	// register_w[12] = register_r[12];
+	// register_w[13] = register_r[13];
+	// register_w[14] = register_r[14];
+	// register_w[15] = register_r[15];
+	// register_w[16] = register_r[16];
+	// register_w[17] = register_r[17];
+	// register_w[18] = register_r[18];
+	// register_w[19] = register_r[19];
+	// register_w[20] = register_r[20];
+	// register_w[21] = register_r[21];
+	// register_w[22] = register_r[22];
+	// register_w[23] = register_r[23];
+	// register_w[24] = register_r[24];
+	// register_w[25] = register_r[25];
+	// register_w[26] = register_r[26];
+	// register_w[27] = register_r[27];
+	// register_w[28] = register_r[28];
+	// register_w[29] = register_r[29];
+	// register_w[30] = register_r[30];
+	// register_w[31] = register_r[31];
 
 	instruction_w = instruction_r;
 	process_counter_w = process_counter_r;
@@ -312,79 +312,79 @@ always@(posedge clk, negedge rst_n)begin
 		WEN_r <= 1;
 		OEN_r <= 1;
 
-		// for (i=0 ; i<32; i=i+1) begin
-		// 	register_r[i] <= 0;
-		// end
-		register_r[0] <= 0;
-		register_r[1] <= 0;
-		register_r[2] <= 0;
-		register_r[3] <= 0;
-		register_r[4] <= 0;
-		register_r[5] <= 0;
-		register_r[6] <= 0;
-		register_r[7] <= 0;
-		register_r[8] <= 0;
-		register_r[9] <= 0;
-		register_r[10] <= 0;
-		register_r[11] <= 0;
-		register_r[12] <= 0;
-		register_r[13] <= 0;
-		register_r[14] <= 0;
-		register_r[15] <= 0;
-		register_r[16] <= 0;
-		register_r[17] <= 0;
-		register_r[18] <= 0;
-		register_r[19] <= 0;
-		register_r[20] <= 0;
-		register_r[21] <= 0;
-		register_r[22] <= 0;
-		register_r[23] <= 0;
-		register_r[24] <= 0;
-		register_r[25] <= 0;
-		register_r[26] <= 0;
-		register_r[27] <= 0;
-		register_r[28] <= 0;
-		register_r[29] <= 0;
-		register_r[30] <= 0;
-		register_r[31] <= 0;
+		for (i=0 ; i<32; i=i+1) begin
+			register_r[i] <= 0;
+		end
+		// register_r[0] <= 0;
+		// register_r[1] <= 0;
+		// register_r[2] <= 0;
+		// register_r[3] <= 0;
+		// register_r[4] <= 0;
+		// register_r[5] <= 0;
+		// register_r[6] <= 0;
+		// register_r[7] <= 0;
+		// register_r[8] <= 0;
+		// register_r[9] <= 0;
+		// register_r[10] <= 0;
+		// register_r[11] <= 0;
+		// register_r[12] <= 0;
+		// register_r[13] <= 0;
+		// register_r[14] <= 0;
+		// register_r[15] <= 0;
+		// register_r[16] <= 0;
+		// register_r[17] <= 0;
+		// register_r[18] <= 0;
+		// register_r[19] <= 0;
+		// register_r[20] <= 0;
+		// register_r[21] <= 0;
+		// register_r[22] <= 0;
+		// register_r[23] <= 0;
+		// register_r[24] <= 0;
+		// register_r[25] <= 0;
+		// register_r[26] <= 0;
+		// register_r[27] <= 0;
+		// register_r[28] <= 0;
+		// register_r[29] <= 0;
+		// register_r[30] <= 0;
+		// register_r[31] <= 0;
 	end
 	else begin
 		// main
-		// for ( i=0 ; i<32; i=i+1) begin
-		// 	register_r[i] <= register_w[i];
-		// end
-		register_r[0] <= 0;
-		register_r[1] <= register_w[1];
-		register_r[2] <= register_w[2];
-		register_r[3] <= register_w[3];
-		register_r[4] <= register_w[4];
-		register_r[5] <= register_w[5];
-		register_r[6] <= register_w[6];
-		register_r[7] <= register_w[7];
-		register_r[8] <= register_w[8];
-		register_r[9] <= register_w[9];
-		register_r[10] <= register_w[10];
-		register_r[11] <= register_w[11];
-		register_r[12] <= register_w[12];
-		register_r[13] <= register_w[13];
-		register_r[14] <= register_w[14];
-		register_r[15] <= register_w[15];
-		register_r[16] <= register_w[16];
-		register_r[17] <= register_w[17];
-		register_r[18] <= register_w[18];
-		register_r[19] <= register_w[19];
-		register_r[20] <= register_w[20];
-		register_r[21] <= register_w[21];
-		register_r[22] <= register_w[22];
-		register_r[23] <= register_w[23];
-		register_r[24] <= register_w[24];
-		register_r[25] <= register_w[25];
-		register_r[26] <= register_w[26];
-		register_r[27] <= register_w[27];
-		register_r[28] <= register_w[28];
-		register_r[29] <= register_w[29];
-		register_r[30] <= register_w[30];
-		register_r[31] <= register_w[31];
+		for ( i=0 ; i<32; i=i+1) begin
+			register_r[i] <= register_w[i];
+		end
+		// register_r[0] <= 0;
+		// register_r[1] <= register_w[1];
+		// register_r[2] <= register_w[2];
+		// register_r[3] <= register_w[3];
+		// register_r[4] <= register_w[4];
+		// register_r[5] <= register_w[5];
+		// register_r[6] <= register_w[6];
+		// register_r[7] <= register_w[7];
+		// register_r[8] <= register_w[8];
+		// register_r[9] <= register_w[9];
+		// register_r[10] <= register_w[10];
+		// register_r[11] <= register_w[11];
+		// register_r[12] <= register_w[12];
+		// register_r[13] <= register_w[13];
+		// register_r[14] <= register_w[14];
+		// register_r[15] <= register_w[15];
+		// register_r[16] <= register_w[16];
+		// register_r[17] <= register_w[17];
+		// register_r[18] <= register_w[18];
+		// register_r[19] <= register_w[19];
+		// register_r[20] <= register_w[20];
+		// register_r[21] <= register_w[21];
+		// register_r[22] <= register_w[22];
+		// register_r[23] <= register_w[23];
+		// register_r[24] <= register_w[24];
+		// register_r[25] <= register_w[25];
+		// register_r[26] <= register_w[26];
+		// register_r[27] <= register_w[27];
+		// register_r[28] <= register_w[28];
+		// register_r[29] <= register_w[29];
+		// register_r[30] <= register_w[30];
+		// register_r[31] <= register_w[31];
 
 		instruction_r <= instruction_w;
 		IR_addr_r <= IR_addr_w;
